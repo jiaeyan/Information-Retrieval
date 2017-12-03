@@ -15,17 +15,6 @@ from numpy import zeros, sum, log, count_nonzero, argsort
 from collections import Counter
 from scipy.spatial.distance import cosine
 
-class Document():
-    
-    def __init_(self, name, words, sentences, label):
-        self.name = name
-        self.words = self.features(words)
-        self.sentences = sentences
-        self.label = label
-    
-    def features(self, words):
-        return words
-
 class TFIDF():
     '''
     D: two way document-id dict

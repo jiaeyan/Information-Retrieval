@@ -3,7 +3,7 @@
 
 class Document():
     
-    def __init_(self, name, words, sentences, label):
+    def __init__(self, name, words, sentences, label):
         self.name = name
         self.words = self.features(words)
         self.sentences = sentences

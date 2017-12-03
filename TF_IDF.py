@@ -100,15 +100,22 @@ class TFIDF():
         keyWords: a list of search words
         n: the number of relative docs returned
         
+        @variable:
+        kwlist: only consider the keyword in the data
+        wc: a vector of sum of tokens in each document in data, len = num_d
+        tf: a vector of number of every kw in each document in data, len = num_d
+        idf: a vector of idf value for each keyword, len = len(kwlist)
+        doc_index: a sorted vector of indices of doc with row: sum of kw values, col: D, from a matrix with row: D, col: kw values        
+        
         @return: 
         A list of n most possible documents' names that match the keyword list.
         '''
-        kwlist = [word for word in keyWords if word in self.W]     #only consider the keyword in the data
-        wc = sum(self.M, axis = 0)                                 #a vector of sum of tokens in each document in data, len = num_d
-        tf = [self.M[self.W[kw]] for kw in kwlist]                 #a vector of number of kw in each document in data, len = num_d
-        idf = [log(self.num_D / count_nonzero(self.M[self.W[kw]])) for kw in kwlist] #len = len(kwlist)
-        doc_index = argsort(sum((tf / wc).transpose() * idf, axis = 1))[::-1][:n]    #a sorted vector of indices of doc with row: sum of kw values, col: D, from a matrix with row: D, col: kw values
-        return [self.D[index] for index in doc_index]              #return the names of the docs
+        kwlist = [word for word in keyWords if word in self.W]
+        wc = sum(self.M, axis = 0)
+        tf = [self.M[self.W[kw]] for kw in kwlist]
+        idf = [log(self.num_D / count_nonzero(self.M[self.W[kw]])) for kw in kwlist]
+        doc_index = argsort(sum((tf / wc).transpose() * idf, axis = 1))[::-1][:n]
+        return [self.D[index] for index in doc_index]
     
     def simDocs(self, n, m, name = None, doc = None):
         '''

@@ -14,6 +14,7 @@ we can use term-document matrix to record all info, where row represents the wor
 from numpy import zeros, sum, log, count_nonzero, argsort
 from collections import Counter
 from scipy.spatial.distance import cosine
+from nltk.corpus import reuters
 
 class TFIDF():
     '''
@@ -37,7 +38,7 @@ class TFIDF():
                 w.add(f)
         D = self.makeDict(d)
         W = self.makeDict(w)
-        return D, W, len(d), len(w), zeros((len(d), len(w)))
+        return D, W, len(d), len(w), zeros((len(w), len(d)))
     
     def makeDict(self, d):
         res = {}
@@ -70,9 +71,9 @@ class TFIDF():
         @return:
         A list of n keywords that have the biggest tf-idf values.
         '''
-        wf = Counter(doc.words) if doc != None else {self.W[i]:self.M[i, self.D[name]] for i in self.num_W}
+        wf = Counter(doc.words) if doc != None else {self.W[i]:self.M[i, self.D[name]] for i in range(self.num_W)}
         wc = len(doc.words) if doc != None else sum(self.M[:, self.D[name]])      
-        wwlist = [(self.wordWeight(tf, wc, w), w) for w, tf in wf]
+        wwlist = [(self.wordWeight(tf, wc, w), w) for w, tf in wf.items()]
         wwlist.sort(reverse = True)
         return [pair[1] for pair in wwlist[:n]]
     
@@ -123,9 +124,9 @@ class TFIDF():
         '''
         res = zeros(self.num_D)
         kws_input = self.getKeyWords(m, name) if name != None else self.getKeyWords(m, doc)
-        wf_input = Counter(doc.words) if doc != None else {self.W[i]:self.M[i, self.D[name]] for i in self.num_W}
+        wf_input = Counter(doc.words) if doc != None else {self.W[i]:self.M[i, self.D[name]] for i in range(self.num_W)}
         wc_input = len(doc.words) if doc != None else sum(self.M[:, self.D[name]]) 
-        for doc in self.num_D:
+        for doc in range(self.num_D):
             kws_doc = self.getKeyWords(m, self.D[doc])
             wc_doc = sum(self.M[:, doc])
             kws = [kw for kw in set(kws_input + kws_doc) if kw in self.W] #ignore oov
@@ -157,6 +158,3 @@ class TFIDF():
                     res.add(sentence)
                     break
         return [' '.join(sentence) for sentence in res]
-        
-        
-        

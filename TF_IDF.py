@@ -14,7 +14,6 @@ we can use term-document matrix to record all info, where row represents the wor
 from numpy import zeros, sum, log, count_nonzero, argsort
 from collections import Counter
 from scipy.spatial.distance import cosine
-from nltk.corpus import reuters
 
 class TFIDF():
     '''
@@ -123,7 +122,7 @@ class TFIDF():
         A list of documents' names that are most similar with given doc.
         '''
         res = zeros(self.num_D)
-        kws_input = self.getKeyWords(m, name) if name != None else self.getKeyWords(m, doc)
+        kws_input = self.getKeyWords(m, name) if name != None else self.getKeyWords(m, doc=doc)
         wf_input = Counter(doc.words) if doc != None else {self.W[i]:self.M[i, self.D[name]] for i in range(self.num_W)}
         wc_input = len(doc.words) if doc != None else sum(self.M[:, self.D[name]]) 
         for doc in range(self.num_D):
@@ -132,8 +131,7 @@ class TFIDF():
             kws = [kw for kw in set(kws_input + kws_doc) if kw in self.W] #ignore oov
             vec_input = [wf_input[kw]/wc_input for kw in kws]
             vec_doc = [self.M[self.W[kw], doc]/wc_doc for kw in kws]
-            cosim = 1 - cosine(vec_input, vec_doc)
-            res[doc] = cosim
+            res[doc] = 1 - cosine(vec_input, vec_doc)
         doc_index = argsort(res)[::-1][:n]
         return [self.D[index] for index in doc_index]
     
@@ -151,10 +149,10 @@ class TFIDF():
         A list of sentences that contain the keywords.
         '''
         res = []
-        kws = self.getKeyWords(n, name) if name != None else self.getKeyWords(n, doc)
+        kws = self.getKeyWords(n, name) if name != None else self.getKeyWords(n, doc=doc)
         for kw in kws:
             for sentence in doc.sentences:
                 if kw in sentence and sentence not in res: 
-                    res.add(sentence)
+                    res.append(sentence)
                     break
         return [' '.join(sentence) for sentence in res]

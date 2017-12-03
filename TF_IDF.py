@@ -33,7 +33,7 @@ class TFIDF():
         d, w = set(), set()
         for doc in data:
             d.add(doc.name)
-            for f in data.words:
+            for f in doc.words:
                 w.add(f)
         D = self.makeDict(d)
         W = self.makeDict(w)
